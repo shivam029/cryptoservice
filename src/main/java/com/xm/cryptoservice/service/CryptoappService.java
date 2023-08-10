@@ -2,6 +2,11 @@ package com.xm.cryptoservice.service;
 
 import java.util.List;
 import java.util.Map;
+
+import com.xm.cryptoservice.entity.CryptoDataSetEntity;
+import com.xm.cryptoservice.model.CryptoDataSets;
+import com.xm.cryptoservice.model.MinmaxResponseDTO;
+import com.xm.cryptoservice.model.CryptoResponseDTO;
 /**
  * @author Shivam_Singh
  * 
@@ -10,10 +15,11 @@ import java.util.Map;
 
 public interface CryptoappService {
 
-	Map<String, Double> getRequestedCryptoDataByName(String cryptoname);
+	MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoname);
 
 	String getRequestedCryptoDataByDate(String cryptodate);
 
-	List<String> getAllCryptoSortByDescending();
+	CryptoResponseDTO getAllCryptoSortByDescending(List<CryptoDataSetEntity> allCryptoDetaildFromDB);
+	
 	
 }

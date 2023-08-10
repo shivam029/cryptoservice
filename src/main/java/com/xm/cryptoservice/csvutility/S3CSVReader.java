@@ -11,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -18,20 +19,29 @@ import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+/*import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;*/
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVReaderHeaderAwareBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import com.xm.cryptoservice.entity.CryptoDataSetEntity;
 import com.xm.cryptoservice.model.CryptoDataSets;
+
 /**
  * @author Shivam_Singh
  * 
  */
 
 public class S3CSVReader {
-	
-	private static final Logger logger = LoggerFactory.getLogger(CsvFileRead.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(CsvFileLoader.class);
 
 	static String bucketName = "crypto-demo-s3-new-bucket";
 	static String prices_folderPath = "prices/";
@@ -57,15 +67,12 @@ public class S3CSVReader {
 	}
 
 	private AmazonS3 getS3() {
-		return AmazonS3ClientBuilder.standard()
-				// .withCredentials(new ProfileCredentialsProvider("aws-profile"))
-				 .withRegion(Regions.EU_NORTH_1)
-				.build();
+		return AmazonS3ClientBuilder.standard().withRegion(Regions.EU_NORTH_1).build();
 	}
 
-	public Map<String, List<CryptoDataSets>> readCryptoCsvFilesFromAWSS3Bucket() {
+	public Map<String, List<CryptoDataSetEntity>> readCryptoCsvFilesFromAWSS3Bucket() {
 
-		Map<String, List<CryptoDataSets>> csvDataMap = new HashMap<>();
+		Map<String, List<CryptoDataSetEntity>> csvDataMap = new HashMap<>();
 
 		// List objects from the specified folder in the S3 bucket
 		ListObjectsV2Request request = new ListObjectsV2Request().withBucketName(bucketName)
@@ -79,9 +86,8 @@ public class S3CSVReader {
 		List<String> fileList = new ArrayList<>();
 
 		for (S3ObjectSummary objectSummary : objectSummaries) {
-		
-			
-             if (!objectSummary.getKey().equals(prices_folderPath) && objectSummary.getKey().contains(".csv")) {
+
+			if (!objectSummary.getKey().equals(prices_folderPath) && objectSummary.getKey().contains(".csv")) {
 				fileList.add(objectSummary.getKey());
 			}
 		}
@@ -89,22 +95,21 @@ public class S3CSVReader {
 		for (String filePathName : fileList) {
 			S3CSVReader reader = new S3CSVReader();
 			List<Map<String, String>> records;
-			List<CryptoDataSets> cryptoDatasetList = new ArrayList<CryptoDataSets>();
+			List<CryptoDataSetEntity> cryptoDatasetList = new ArrayList<CryptoDataSetEntity>();
 			try {
 
 				records = reader.getS3Records(bucketName, filePathName);
 
 				String str = filePathName.substring(prices_folderPath.length());
-		
+
 				String[] cryptoName = str.split("_");
 
 				logger.info("cryptoName " + cryptoName[0]);
 
 				for (Map<String, String> eachRecord : records) {
 
-
 					Date datestamp = new Date(Long.parseLong(eachRecord.get("timestamp")));
-					CryptoDataSets rows = new CryptoDataSets();
+					CryptoDataSetEntity rows = new CryptoDataSetEntity();
 					rows.setTimestamp(datestamp);
 					rows.setSymbol(eachRecord.get("symbol"));
 					rows.setPrice(Double.parseDouble(eachRecord.get("price")));
@@ -114,12 +119,11 @@ public class S3CSVReader {
 				}
 				csvDataMap.put(cryptoName[0], cryptoDatasetList);
 
-				
 			} catch (CsvValidationException e) {
-				
+
 				e.printStackTrace();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 

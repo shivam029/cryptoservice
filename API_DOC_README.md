@@ -64,6 +64,10 @@ http://localhost:8080/api/v1/crypto/normalized?cryptoDate=01-06-2024
 # Sample Response :
 No data available for this date
 
+$Swagger Link:
+http://localhost:8080/swagger-ui/index.htm
+http://localhost:8080/swagger-ui/index.html#/cryptoservice-controller/getRequestedCryptoDataByDate
+
 # Things to consider
 1. Documentation for code and api are as mentioned above in this file
 2. We can add more .csv files to the prices folder if we want to scale it and add more crypto types,

@@ -1,150 +1,153 @@
 package com.xm.cryptoservice.serviceimpl;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.xm.cryptoservice.csvutility.CsvFileRead;
+import com.xm.cryptoservice.csvutility.CsvFileLoader;
+import com.xm.cryptoservice.entity.CryptoDataSetEntity;
 import com.xm.cryptoservice.model.CryptoDataSets;
+import com.xm.cryptoservice.model.CryptoResponseDTO;
+import com.xm.cryptoservice.model.MinmaxResponseDTO;
+import com.xm.cryptoservice.service.CryptoCsvLoadService;
 import com.xm.cryptoservice.service.CryptoappService;
 
 
 @Service
 public class CryptoappServiceImpl implements CryptoappService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(CsvFileRead.class);
+	private static final Logger logger = LoggerFactory.getLogger(CsvFileLoader.class);
+	
+	@Autowired
+	CryptoCsvLoadService cryptoCsvLoadService;
+	
+	
+    @Cacheable(value = "getCryptobyName")
+	public MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoname) {
+		
+		MinmaxResponseDTO responseDTOMinmaxList = new MinmaxResponseDTO();
 
-
-	public Map<String, Double> getRequestedCryptoDataByName(String cryptoname) {
-		Map<String, Double> resultMap = new HashMap<>();
-
-		Map<String, List<CryptoDataSets>> allCryptodetails = CsvFileRead.readCryptoCsvFiles();
-		boolean flag = true;
-		if(!allCryptodetails.isEmpty()) {
-		for (Map.Entry<String, List<CryptoDataSets>> datalst : allCryptodetails.entrySet()) {
-
+		List<CryptoDataSetEntity> allCryptodetails = cryptoCsvLoadService.getAllCryptoDetailsByName(cryptoname);
+		List<CryptoDataSets> cryptoDataSetList = new ArrayList<>();
+		
+		for(CryptoDataSetEntity cryptoData : allCryptodetails ) {
+			CryptoDataSets cryptoDetails = new CryptoDataSets();
 			
-			if (datalst.getKey().equals(cryptoname)) {
-				flag = false;
-				double maxValue = datalst.getValue().stream().mapToDouble(CryptoDataSets::getPrice).max().orElse(0);
-				double minValue = datalst.getValue().stream().mapToDouble(CryptoDataSets::getPrice).min().orElse(0);
+			cryptoDetails.setPrice(cryptoData.getPrice());
+			cryptoDetails.setSymbol(cryptoData.getSymbol());
+			cryptoDetails.setTimestamp(cryptoData.getTimestamp());
+			
+			cryptoDataSetList.add(cryptoDetails);
+          }
+			
+		
+                double maxValue = cryptoDataSetList.stream()
+						                            .mapToDouble(CryptoDataSets::getPrice)
+						                            .max().orElse(0);
+				double minValue = cryptoDataSetList.stream()
+						                            .mapToDouble(CryptoDataSets::getPrice)
+						                            .min().orElse(0);
 
-				Date oldestDate = datalst.getValue().stream().map(CryptoDataSets::getTimestamp).min(Date::compareTo)
-						.get();
+				Date oldestDate = cryptoDataSetList.stream()
+						            .map(CryptoDataSets::getTimestamp)
+						            .min(Date::compareTo)
+						            .get();
 				
-				logger.info("oldestDate " + oldestDate);
 
-				Double oldestValue = datalst.getValue().stream().filter(x -> x.getTimestamp().equals(oldestDate))
-						.mapToDouble(CryptoDataSets::getPrice).findFirst().orElse(0);
+				Double oldestValue = cryptoDataSetList.stream()
+						                              .filter(x -> x.getTimestamp().equals(oldestDate))
+						                              .mapToDouble(CryptoDataSets::getPrice)
+						                              .findFirst().orElse(0);
 
-				Date newestDate = datalst.getValue().stream().map(CryptoDataSets::getTimestamp).max(Date::compareTo)
-						.get();
-			
-				logger.info("newestDate " + newestDate);
+				Date newestDate = cryptoDataSetList.stream()
+						                           .map(CryptoDataSets::getTimestamp)
+						                           .max(Date::compareTo)
+						                           .get();
 
-				Double newestValue = datalst.getValue().stream().filter(x -> x.getTimestamp().equals(newestDate))
-						.mapToDouble(CryptoDataSets::getPrice).findFirst().orElse(0);
+				Double newestValue = cryptoDataSetList.stream()
+						                              .filter(x -> x.getTimestamp().equals(newestDate))
+						                              .mapToDouble(CryptoDataSets::getPrice)
+						                              .findFirst().orElse(0);
 
-				resultMap.put("OLDEST", oldestValue);
-				resultMap.put("NEWEST", newestValue);
-				resultMap.put("MIN", minValue);
-				resultMap.put("MAX", maxValue);
 				
-			
-			}
-		}
-		if(flag) {
-			resultMap.put("This Crypto is not Supported", 0.0);
-			}
-		}
-		else {
-			resultMap.put("There is no data availabe to display", 0.0);
-		}
+		       responseDTOMinmaxList.setOldest(oldestValue);
+		       responseDTOMinmaxList.setNewest(newestValue);
+		       responseDTOMinmaxList.setMin(minValue);
+		       responseDTOMinmaxList.setMax(maxValue);
+		       
+		       logger.info("Info "+responseDTOMinmaxList);
 
-
-		return resultMap;
+		      return responseDTOMinmaxList;
 	}
 
 	@Override
+	@Cacheable(value = "getCryptobyDate")
 	public String getRequestedCryptoDataByDate(String cryptodate) {
 
-		Map<String, Double> resultMap = new HashMap<>();
-		String highestNormalizedKey = "NA";
-
-		Map<String, List<CryptoDataSets>> allCryptodetails = CsvFileRead.readCryptoCsvFiles();
-
-		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
-
-		if(!allCryptodetails.isEmpty()) {
-		for (Map.Entry<String, List<CryptoDataSets>> datalst : allCryptodetails.entrySet()) {
-
-			// Uncomment below code if we use x_Val for calculating Normalization
-		/*	double x_Val = datalst.getValue().stream()
-					.filter(x -> formatter.format(x.getTimestamp()).equals(cryptodate))
-					.mapToDouble(CryptoDataSets::getPrice).findAny().orElse(0);
-        */
-			double maxValue = datalst.getValue().stream()
-					.filter(x -> formatter.format(x.getTimestamp()).equals(cryptodate))
-					.mapToDouble(CryptoDataSets::getPrice).max().orElse(0);
-			//logger.info("maxValue "+maxValue);
-			double minValue = datalst.getValue().stream()
-					.filter(x -> formatter.format(x.getTimestamp()).equals(cryptodate))
-					.mapToDouble(CryptoDataSets::getPrice).min().orElse(0);
-			//logger.info("minValue "+minValue);
-			
-			double normalizedVal = (maxValue - minValue) / minValue;
-
-			if (!Double.isNaN(normalizedVal)) {
-				resultMap.put(datalst.getKey(), normalizedVal);
-	        }
-				
-		}
-		logger.info("resultMappp "+resultMap);
+		String highestNormalizedKey = cryptoCsvLoadService.getAllCryptoDetailsByDate(cryptodate);
 		
-        highestNormalizedKey = resultMap.entrySet().stream()
-                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-                .map(Map.Entry::getKey).findFirst().orElse("No data available for this date");
-                
-		
-		}else {
-			
-			highestNormalizedKey= "Please check the date - No data available for this date ";
-		}
-		return highestNormalizedKey;
+        return highestNormalizedKey;
 
 	}
 
 	@Override
-	public  List<String> getAllCryptoSortByDescending() {
+	@Cacheable(value = "allcryptosorteddata")
+	public  CryptoResponseDTO getAllCryptoSortByDescending(List<CryptoDataSetEntity> allCryptoDetaildFromDB) {
 
+		
+	    List<String> symbolLst = allCryptoDetaildFromDB.stream()
+	    		                                       .map(CryptoDataSetEntity::getSymbol)
+	    		                                       .distinct().collect(Collectors.toList());
+		
+		
 		Map<String, Double> resultMap = new HashMap<>();
+		CryptoResponseDTO responseDTOallCryptoDesc = new CryptoResponseDTO();
 		
-		 Map<String, List<CryptoDataSets>> allCryptodetails = CsvFileRead.readCryptoCsvFiles();
+	    
+         for (String symbol : symbolLst) {
 
-		if(!allCryptodetails.isEmpty()) {
-		for (Map.Entry<String, List<CryptoDataSets>> datalst : allCryptodetails.entrySet()) {
+			        double maxValue = allCryptoDetaildFromDB.stream()
+					                  .filter(x->x.getSymbol().equals(symbol))
+					                  .mapToDouble(CryptoDataSetEntity::getPrice)
+					                  .max().orElse(0);
+		
+			        double minValue = allCryptoDetaildFromDB.stream()
+					                  .filter(x->x.getSymbol().equals(symbol))
+					                  .mapToDouble(CryptoDataSetEntity::getPrice)
+					                  .min().orElse(0);
+			
+			        double normalizedVal = (maxValue - minValue) / minValue;
 
-			double maxValue = datalst.getValue().stream().mapToDouble(CryptoDataSets::getPrice).max().orElse(0);
-			double minValue = datalst.getValue().stream().mapToDouble(CryptoDataSets::getPrice).min().orElse(0);
-			double normalizedVal = (maxValue - minValue) / minValue;
-
-			resultMap.put(datalst.getKey(), normalizedVal);
+		 	    resultMap.put(symbol, normalizedVal);
          }
-		}
-		// Sort the keys based on the values in descending order
-		List<String> sortedKeys = resultMap.entrySet().stream()
-                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-                .map(Map.Entry::getKey)
-                .toList();
 		
-
-		return sortedKeys;
+		// Sort the keys based on the values in descending order
+		List<String> sortedKeys = resultMap.entrySet()
+				                             .stream()
+                                             .sorted(Map.Entry.<String, Double>comparingByValue()
+                                             .reversed())
+                                             .map(Map.Entry::getKey)
+                                             .collect(Collectors.toList());
+		
+		responseDTOallCryptoDesc.setData(sortedKeys);
+		
+		logger.info(" Sorted crypto list "+responseDTOallCryptoDesc.getData().toString());
+		
+		return responseDTOallCryptoDesc;
+	
 	}
+
+	
+
+	
 
 }

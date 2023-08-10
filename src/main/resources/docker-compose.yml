@@ -1,0 +1,28 @@
+version: "3"
+services:
+  mongodb-container-crypto:
+    image: mongo:latest
+    container_name: "mongodb-container-crypto"
+    ports:
+      - 27017:27017
+  crypro-recommendation-service:
+    image: crypro-recommendation-service-2
+    container_name: crypro-recommendation-service
+    ports:
+      - 8080:8080
+    links:
+      - mongodb-container-crypto
+      
+  cache:
+    image: redis:6.2
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --loglevel warning
+    volumes:
+      - cache:/data
+volumes:
+  cache:
+    driver: local
+      
+      

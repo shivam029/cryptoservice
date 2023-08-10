@@ -16,7 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.xm.cryptoservice.model.MinmaxResponseDTO;
+import com.xm.cryptoservice.model.CryptoResponseDTO;
+import com.xm.cryptoservice.service.CryptoCsvLoadService;
 import com.xm.cryptoservice.service.CryptoappService;
 
 
@@ -25,6 +29,9 @@ public class CryptoappServiceImplTest {
 
     @Mock
     CryptoappService service;
+    
+    @Mock
+	CryptoCsvLoadService cryptoCsvLoadService;
 
     @BeforeEach
     public void init() {
@@ -36,6 +43,8 @@ public class CryptoappServiceImplTest {
 
         List<String> mocklist = new ArrayList<String>();
         
+        CryptoResponseDTO responseDTOallCryptoDesc = new CryptoResponseDTO();
+        
         // Adding the Mock data
         mocklist.add( "ETH");
         mocklist.add( "XRP");
@@ -43,37 +52,41 @@ public class CryptoappServiceImplTest {
         mocklist.add( "LTC");
         mocklist.add( "BTC");
        
-       
-       when(service.getAllCryptoSortByDescending()).thenReturn(mocklist);
-
-        //test
-        List<String> resList = service.getAllCryptoSortByDescending();
+        responseDTOallCryptoDesc.setData(mocklist);
         
-        assertEquals(5, resList.size());
-        assertThat(service.getAllCryptoSortByDescending()).isEqualTo(resList);
-
+		
+		  when(service.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails())).thenReturn(
+		  responseDTOallCryptoDesc);
+		  
+		  // Test
+		  CryptoResponseDTO resList = service.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails());
+		  
+		  assertEquals(5, resList.getData().size());
+		  assertThat(service.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails())).isEqualTo(resList);
+		 
  }
     
     @Test
     public void getRequestedCryptoDataByNameTest() throws ParseException {
 
-        Map<String,Double> hmMockdata = new HashMap();
+       
+        MinmaxResponseDTO resDtoMock =new MinmaxResponseDTO();
         
         // Adding the mock data
-        hmMockdata.put("OLDEST", 46813.21);
-        hmMockdata.put("NEWEST", 33225.59);
-        hmMockdata.put("MIN", 47722.66);
-        hmMockdata.put("MAX", 38415.79);
        
+        resDtoMock.setOldest(46813.21);
+        
        String cryptoName = "BTC";
        
-       when(service.getRequestedCryptoDataByName(cryptoName)).thenReturn(hmMockdata);
+       when(service.getRequestedCryptoDataByName(cryptoName)).thenReturn(resDtoMock);
 
         //test
-       Map<String,Double> resList = service.getRequestedCryptoDataByName(cryptoName);
-        
-        assertEquals(4, resList.size());
-        assertThat(service.getRequestedCryptoDataByName(cryptoName)).isEqualTo(resList);
+       MinmaxResponseDTO resDtoTest = service.getRequestedCryptoDataByName(cryptoName);
+       
+       boolean res =  resDtoTest.getOldest().equals(46813.21);
+      
+        assertEquals(true, res);
+        assertThat(service.getRequestedCryptoDataByName(cryptoName)).isEqualTo(resDtoTest);
 
  }
     
@@ -82,8 +95,7 @@ public class CryptoappServiceImplTest {
 
         String mockRes = "XRP";
         
-              
-       String cryptoDate = "01-31-2022";
+        String cryptoDate = "01-31-2022";
        
        when(service.getRequestedCryptoDataByDate(cryptoDate)).thenReturn(mockRes);
 
