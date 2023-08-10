@@ -3,20 +3,49 @@
 # Java 17 version is used
 # Opencsv library is used to read the CSV files
 # Only .csv file will be read and other file formats will be excluded
+# Rate Limit is Implemented with 10 requests/ per ( this value can be changed from properties file )
+# Caching is Implemented using Spring Boot Data Redis 
+# The application uses MongoDb instance running as Container on docker for data persistence
 # All the given csv files are placed inside my AWS account's S3-bucket 'prices' folder in AWS 
      Bucket name = 'crypto-demo-s3-new-bucket'
+#The Dockerfile is added in root folder and we can generate Images to run instance on containers
 # Containerizing of the application is possible
- Total 3 containers will run on the Docker
+ Total 3 containers are required to be created to Run the application
  1. Container-1 is for Spring-boot application created from the Image
  2. Container-2 is for mongo dbinstance created from the latest mongo Image pulled 
  3. Container-3 is for Redis cache, the Image is pulled for Redis:6.2 version 
-      The Dockerfile is added in root folder and we can generate Images using below commands
-         1.Command to generate fresh .jar file 
-            mvn clean install
-         2.Docker Command to build Image:
-            docker build -t crypro-recommendation-service .
-         3.Command ro run the Image:
-            docker run -p 8080:8080 crypro-service-1aug-image2
+ 
+ Steps to Run the Application:
+ Note we need to ensure mongodb and redis containers are UP when we run the Spring boot application
+ 
+ List of Commands in sequence to start all the containers and run the application
+ Run all the below commands on terminal and ensure Docker is installed you can skip the commands if redis and mongodb image is already pulled 
+ 
+ 1.docker pull redis:6.2
+ 2.docker pull mongo:latest
+ 3.mvn clean install -DskipTests
+ 4.docker build -t crypro-recommendation-service .
+ 
+ Next, Go to the root of the resource folder where we have docker-compose.yml file and run the below command
+ 
+ 5.docker-compose up
+ 
+ 6.docker ps
+ 
+ Please check the logs here all the 3 containers will be started
+ Example:
+ C:\Users\Shivam_Singh\Desktop\XM-Interview\cryptoservice>docker ps
+CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS          PORTS                      NAMES
+6b1808d8690d   crypro-recommendation-service   "java -jar app.jar"      16 seconds ago   Up 14 seconds   0.0.0.0:8080->8080/tcp     crypro-recommendation-service
+d605fd7cb4f6   mongo:latest                    "docker-entrypoint.s…"   16 seconds ago   Up 14 seconds   0.0.0.0:27017->27017/tcp   mongodb-container-crypto
+a3a0608e153e   redis:6.2                       "docker-entrypoint.s…"   16 seconds ago   Up 15 seconds   0.0.0.0:6379->6379/tcp     my-redis-crypto
+ 
+We can test all the end point API's as listed below
+
+Note: we can run 'mvn clean install' command without -DskipTests since it will not fail now as we have 
+resolved the dependency of TestCases by creating containers for both mongodb and redis 
+ 
+    
 # There is a methods to read the CSV file as mentioned in readCryptoCsvFiles() 
 # inside class CsvFileRead.java
          readCryptoCsvFilesFromAWSS3Bucket() [ Read csv from S3 bucket ]

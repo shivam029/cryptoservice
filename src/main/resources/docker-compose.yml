@@ -6,7 +6,7 @@ services:
     ports:
       - 27017:27017
   crypro-recommendation-service:
-    image: crypro-recommendation-service-2
+    image: crypro-recommendation-service
     container_name: crypro-recommendation-service
     ports:
       - 8080:8080
@@ -15,6 +15,7 @@ services:
       
   cache:
     image: redis:6.2
+    container_name: my-redis-crypto
     restart: always
     ports:
       - '6379:6379'
