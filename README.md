@@ -119,6 +119,22 @@ http://localhost:8080/swagger-ui/index.htm
      which can be triggered when ever new CSV file is added or updated and the trigger event can 
      be used to update the contents of csv to local-cache and the 3-API's we developed can be directed to 
      read from the cache instead of reading from csv every time, this way we can have better performance
+     
+     
+# Fixes of Code for the Feedback received from Dzianis Dated 18-08-2023
+ 1.All the extra Spaces removed and formating is done
+ 2.camel casing for variables defined wherever it was missed
+ 3.All the 'return' is directly done in controller class instead of creating a new object reference for DTO classes
+ 4.logger.debug is added where ever necessary instead of logger.info
+ 5.Get request is replaced by Post request for the CSV records insertion to mongDB
+ 6.CustomeException.java is renamed to CryptoserviceException.java
+ 7.All the exceptions handling is done in Service layer instead of controller layer
+ 8.Regular expression is used to split the string using Pattern Class
+ 9.e.printStackTrace() is removed from exception catch and logger.error is added
+ 10.@ResponseBody is removed from the Controllers
+ 11.String initialization is done properly where ever required
+ 12.Removed the extra assigning of CryptoDataSetEntity object values to CryptoDataSet where ever it was Implemented
+ 13.Return to method is done in the initial level if the list is empty and execute for loop only list is not empty
 
 
 
