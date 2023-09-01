@@ -7,59 +7,56 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "cryptodetails")
 public class CryptoDataSetEntity {
- 
+
 	@Id
 	String id;
-    Date timestamp;
+	Date timestamp;
 	String symbol;
 	Double price;
 
-  public CryptoDataSetEntity() {
+	public CryptoDataSetEntity() {
 
-  }
-  
-  public CryptoDataSetEntity(Date timestamp, String symbol, Double price) {
-	super();
-	this.timestamp = timestamp;
-	this.symbol = symbol;
-	this.price = price;
-}
+	}
 
-public String getId() {
-    return id;
-  }
+	public CryptoDataSetEntity(Date timestamp, String symbol, Double price) {
+		super();
+		this.timestamp = timestamp;
+		this.symbol = symbol;
+		this.price = price;
+	}
 
-  
-public Date getTimestamp() {
-	return timestamp;
-}
+	public String getId() {
+		return id;
+	}
 
-public void setTimestamp(Date timestamp) {
-	this.timestamp = timestamp;
-}
+	public Date getTimestamp() {
+		return timestamp;
+	}
 
-public String getSymbol() {
-	return symbol;
-}
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
 
-public void setSymbol(String symbol) {
-	this.symbol = symbol;
-}
+	public String getSymbol() {
+		return symbol;
+	}
 
-public Double getPrice() {
-	return price;
-}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
 
-public void setPrice(Double price) {
-	this.price = price;
-}
+	public Double getPrice() {
+		return price;
+	}
 
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
+	@Override
+	public String toString() {
+		return "CryptoDataSetEntity [id=" + id + ",timestamp=" + timestamp + ", symbol=" + symbol + ", price=" + price
+				+ "]";
+	}
 
-@Override
-public String toString() {
-	return "CryptoDataSetEntity [id=" + id + ",timestamp=" + timestamp + ", symbol=" + symbol + ", price=" + price + "]";
-}
-
-  
 }

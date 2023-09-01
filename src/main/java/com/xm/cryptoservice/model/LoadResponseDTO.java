@@ -3,14 +3,12 @@ package com.xm.cryptoservice.model;
 import org.springframework.http.HttpStatus;
 
 public class LoadResponseDTO {
-	
+
 	int size;
-	
+
 	String status_msg;
-	
+
 	HttpStatus statuscode;
-	
-	
 
 	public int getSize() {
 		return size;
@@ -36,8 +34,4 @@ public class LoadResponseDTO {
 		this.statuscode = statuscode;
 	}
 
-	
-	
-	
-	
 }

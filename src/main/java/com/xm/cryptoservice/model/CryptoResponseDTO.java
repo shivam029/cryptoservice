@@ -13,7 +13,5 @@ public class CryptoResponseDTO {
 	public void setData(List<String> data) {
 		this.data = data;
 	}
-	
-	
-	
+
 }

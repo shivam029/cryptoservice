@@ -1,6 +1,5 @@
 package com.xm.cryptoservice.controller;
 
-
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,24 +12,22 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class CryptoserviceControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
-	
+
 	@Autowired
 	WebApplicationContext webApplicationContext;
 
 	protected void setUp() {
-		
-	     mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+		mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
 	}
-	
+
 	@Test
 	public void loadAllCsvDataToDatabase() throws Exception {
 		String uri = "/api/v1/crypto/load";
@@ -41,7 +38,6 @@ public class CryptoserviceControllerTest {
 		Assert.assertNotNull(mvcResult.getResponse().getContentAsString());
 	}
 
-    
 	@Test
 	public void getAllCryptoSortByDescendingTest() throws Exception {
 		String uri = "/api/v1/crypto/sort/desc";
@@ -51,7 +47,7 @@ public class CryptoserviceControllerTest {
 		Assert.assertEquals(200, status);
 		Assert.assertNotNull(mvcResult.getResponse().getContentAsString());
 	}
-	
+
 	@Test
 	public void getRequestedCryptoDataByNameTest() throws Exception {
 		String uri = "/api/v1/crypto/minmax?cryptoName=DOGE";
@@ -61,7 +57,7 @@ public class CryptoserviceControllerTest {
 		Assert.assertEquals(200, status);
 		Assert.assertNotNull(mvcResult.getResponse().getContentAsString());
 	}
-	
+
 	@Test
 	public void getRequestedCryptoDataByDateTest() throws Exception {
 		String uri = "/api/v1/crypto/normalized?cryptoDate=01-01-2022";
@@ -71,6 +67,5 @@ public class CryptoserviceControllerTest {
 		Assert.assertEquals(200, status);
 		Assert.assertNotNull(mvcResult.getResponse().getContentAsString());
 	}
-	
-	
+
 }

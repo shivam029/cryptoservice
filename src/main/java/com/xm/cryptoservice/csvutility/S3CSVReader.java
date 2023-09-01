@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -19,20 +19,12 @@ import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-/*import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;*/
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVReaderHeaderAwareBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.xm.cryptoservice.entity.CryptoDataSetEntity;
-import com.xm.cryptoservice.model.CryptoDataSets;
 
 /**
  * @author Shivam_Singh
@@ -81,7 +73,7 @@ public class S3CSVReader {
 		List<S3ObjectSummary> objectSummaries = result.getObjectSummaries();
 
 		// Print the list of object names
-		logger.info("Objects in folder '" + prices_folderPath + "':");
+		logger.debug("Objects in folder '" + prices_folderPath + "':");
 
 		List<String> fileList = new ArrayList<>();
 
@@ -102,9 +94,9 @@ public class S3CSVReader {
 
 				String str = filePathName.substring(prices_folderPath.length());
 
-				String[] cryptoName = str.split("_");
+				String[] cryptoName = str.split(Pattern.quote("_"));
 
-				logger.info("cryptoName " + cryptoName[0]);
+				logger.debug("cryptoName " + cryptoName[0]);
 
 				for (Map<String, String> eachRecord : records) {
 
@@ -120,11 +112,12 @@ public class S3CSVReader {
 				csvDataMap.put(cryptoName[0], cryptoDatasetList);
 
 			} catch (CsvValidationException e) {
-
-				e.printStackTrace();
+				
+                  logger.error("Csv Validation error ", e);
+                  
 			} catch (IOException e) {
 
-				e.printStackTrace();
+				logger.error("IO Exception error ", e);
 			}
 
 		}

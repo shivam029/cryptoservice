@@ -12,8 +12,8 @@ public interface CryptoCsvLoadService {
 	LoadResponseDTO loadAllCsvDataToDatabase();
 
 	List<CryptoDataSetEntity> getAllCryptoDetails();
-	
+
 	List<CryptoDataSetEntity> getAllCryptoDetailsByName(String cryptoname);
-	
+
 	String getAllCryptoDetailsByDate(String cryptoDate);
 }

@@ -9,8 +9,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
  * @author Shivam_Singh
  * 
  */
-
-
 @SpringBootApplication
 @EnableCaching
 @EnableMongoRepositories
