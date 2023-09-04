@@ -39,8 +39,6 @@ public class CryptoappServiceImplTest {
 
 		List<String> mocklist = new ArrayList<String>();
 
-		CryptoResponseDTO responseDTOallCryptoDesc = new CryptoResponseDTO();
-
 		// Adding the Mock data
 		mocklist.add("ETH");
 		mocklist.add("XRP");
@@ -48,7 +46,8 @@ public class CryptoappServiceImplTest {
 		mocklist.add("LTC");
 		mocklist.add("BTC");
 
-		responseDTOallCryptoDesc.setData(mocklist);
+
+		CryptoResponseDTO responseDTOallCryptoDesc = new CryptoResponseDTO(mocklist);
 
 		when(service.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails()))
 				.thenReturn(responseDTOallCryptoDesc);
@@ -56,7 +55,7 @@ public class CryptoappServiceImplTest {
 		// Test
 		CryptoResponseDTO resList = service.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails());
 
-		assertEquals(5, resList.getData().size());
+		assertEquals(5, resList.data().size());
 		assertThat(service.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails())).isEqualTo(resList);
 
 	}
@@ -64,11 +63,9 @@ public class CryptoappServiceImplTest {
 	@Test
 	public void getRequestedCryptoDataByNameTest() throws ParseException {
 
-		MinmaxResponseDTO resDtoMock = new MinmaxResponseDTO();
+		MinmaxResponseDTO resDtoMock = new MinmaxResponseDTO(46813.21,86813.21,36813.21,20813.21);
 
 		// Adding the mock data
-
-		resDtoMock.setOldest(46813.21);
 
 		String cryptoName = "BTC";
 
@@ -77,7 +74,7 @@ public class CryptoappServiceImplTest {
 		// test
 		MinmaxResponseDTO resDtoTest = service.getRequestedCryptoDataByName(cryptoName);
 
-		boolean res = resDtoTest.getOldest().equals(46813.21);
+		boolean res = resDtoTest.oldest().equals(46813.21);
 
 		assertEquals(true, res);
 		assertThat(service.getRequestedCryptoDataByName(cryptoName)).isEqualTo(resDtoTest);

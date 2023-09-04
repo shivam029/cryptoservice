@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.xm.cryptoservice.csvutility.CsvFileLoader;
 import com.xm.cryptoservice.entity.CryptoDataSetEntity;
 import com.xm.cryptoservice.exception.CryptoserviceException;
-import com.xm.cryptoservice.model.CryptoDataSets;
 import com.xm.cryptoservice.model.LoadResponseDTO;
 import com.xm.cryptoservice.repository.CryptoDataSetRepository;
 import com.xm.cryptoservice.service.CryptoCsvLoadService;

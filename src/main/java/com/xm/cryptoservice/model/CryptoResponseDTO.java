@@ -2,16 +2,6 @@ package com.xm.cryptoservice.model;
 
 import java.util.List;
 
-public class CryptoResponseDTO {
+public record CryptoResponseDTO(List<String> data) {}
 
-	List<String> data;
-
-	public List<String> getData() {
-		return data;
-	}
-
-	public void setData(List<String> data) {
-		this.data = data;
-	}
-
-}
+	

@@ -31,7 +31,7 @@ public class CryptoappServiceImpl implements CryptoappService {
 	@Cacheable(value = "getCryptobyName")
 	public MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoName) {
 
-		var responseDTOMinmax = new MinmaxResponseDTO();
+		MinmaxResponseDTO responseDTOMinmax;
         
 		var allCryptodetails = cryptoCsvLoadService.getAllCryptoDetailsByName(cryptoName);
 		
@@ -55,12 +55,9 @@ public class CryptoappServiceImpl implements CryptoappService {
 			var newestValue = allCryptodetails.stream().filter(x -> x.getTimestamp().equals(newestDate))
 					.mapToDouble(CryptoDataSetEntity::getPrice).findFirst().orElse(0);
 
-			responseDTOMinmax.setOldest(oldestValue);
-			responseDTOMinmax.setNewest(newestValue);
-			responseDTOMinmax.setMin(minValue);
-			responseDTOMinmax.setMax(maxValue);
-
-			logger.info("Crypto Values " + responseDTOMinmax);
+			responseDTOMinmax = new MinmaxResponseDTO(oldestValue,newestValue,minValue,maxValue);
+			
+            logger.info("Crypto Values " + responseDTOMinmax);
 
 		} catch (Exception e) {
 			throw new CryptoserviceException("Error while fetching for " + cryptoName );
@@ -85,7 +82,7 @@ public class CryptoappServiceImpl implements CryptoappService {
 				.collect(Collectors.toList());
 
 		var resultMap = new HashMap<String, Double>();
-		var responseDTOallCryptoDesc = new CryptoResponseDTO();
+		CryptoResponseDTO responseDTOallCryptoDesc;
 
 		for (String symbol : symbolLst) {
 
@@ -109,9 +106,9 @@ public class CryptoappServiceImpl implements CryptoappService {
 				.sorted(Map.Entry.<String, Double>comparingByValue().reversed()).map(Map.Entry::getKey)
 				.collect(Collectors.toList());
 
-		responseDTOallCryptoDesc.setData(sortedKeys);
+		responseDTOallCryptoDesc = new CryptoResponseDTO(sortedKeys);
 
-		logger.info(" Sorted crypto list " + responseDTOallCryptoDesc.getData().toString());
+		logger.info(" Sorted crypto list " + responseDTOallCryptoDesc.data().toString());
 
 		return responseDTOallCryptoDesc;
 
