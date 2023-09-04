@@ -45,13 +45,12 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 
 			try {
 				List<CryptoDataSetEntity> lst = cryptoDataSetRepository.saveAll(datalst.getValue());
-				logger.debug("Crypto " + datalst.getKey() + " Inserted = " + lst.size());
+				logger.info("Crypto " + datalst.getKey() + " Inserted = " + lst.size());
 				loadResponseDTO = new LoadResponseDTO(lst.size(), "success", HttpStatus.CREATED);
 
 			} catch (Exception e) {
 				loadResponseDTO = new LoadResponseDTO(0, "error", HttpStatus.INTERNAL_SERVER_ERROR);
 				logger.error("Error with Data load from csv to mongodb ", e);
-				
 			}
 
 		}
@@ -125,7 +124,7 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 					.get();
 		}
 
-		logger.debug("highestNormalizedKey is " + highestNormalizedKey);
+		logger.info("Highest Normalized Key is " + highestNormalizedKey);
 
 		if (highestNormalizedKey == null) {
 

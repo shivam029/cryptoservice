@@ -31,8 +31,8 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
 	private Bucket newBucket(String apiKey) {
 
-		logger.debug("RATE_LIMIT is " + RATE_LIMIT);
-		logger.debug("TIME_DURATION is " + TIME_DURATION);
+		logger.info("RATE_LIMIT is " + RATE_LIMIT);
+		logger.info("TIME_DURATION is " + TIME_DURATION);
 		Refill refill = Refill.intervally(RATE_LIMIT, Duration.ofMinutes(TIME_DURATION));
 		Bandwidth limit = Bandwidth.classic(RATE_LIMIT, refill);
 		return Bucket.builder().addLimit(limit).build();

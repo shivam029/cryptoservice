@@ -135,6 +135,10 @@ http://localhost:8080/swagger-ui/index.htm
  11.String initialization is done properly where ever required
  12.Removed the extra assigning of CryptoDataSetEntity object values to CryptoDataSet where ever it was Implemented
  13.Return to method is done in the initial level if the list is empty and execute for loop only list is not empty
+ 14.Swagger description updated in Swagger-ui
+ 15.Implemented 'var' keyword where ever necessary
+ 16.Implemented 'record' keyword for DTO's
+ 17.Renamed the exception method name resourceNotFoundException 
 
 
 

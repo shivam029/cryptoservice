@@ -26,7 +26,7 @@ public class CryptoserviceController {
 	@Autowired
 	CryptoCsvLoadService cryptoCsvLoadService;
 
-	@Operation(summary = "Post all crypto ", description = "This API Loads all CSV data to mongo database ")
+	@Operation(summary = "Post all crypto from CSV ", description = "This API Loads all CSV data to mongo database ")
 	@PostMapping(value = "/load")
 	public LoadResponseDTO loadAllCsvDataToDatabase() {
 
@@ -42,7 +42,7 @@ public class CryptoserviceController {
 
 	}
 
-	@Operation(summary = "Get crypto min-max by date", description = "Return the crypto values for oldest/newest/min/max ")
+	@Operation(summary = "Get crypto min-max by crypto name", description = "Return the crypto values for oldest/newest/min/max ")
 	@GetMapping(value = "/minmax")
 	public MinmaxResponseDTO getRequestedCryptoDataByName(@RequestParam(required = true) String cryptoName) {
 

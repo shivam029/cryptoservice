@@ -32,8 +32,12 @@ public class CryptoappServiceImpl implements CryptoappService {
 	public MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoName) {
 
 		var responseDTOMinmax = new MinmaxResponseDTO();
-
+        
 		var allCryptodetails = cryptoCsvLoadService.getAllCryptoDetailsByName(cryptoName);
+		
+		if(allCryptodetails.isEmpty()) {
+			throw new CryptoserviceException("The crypto " + cryptoName + " is not Supported");
+		}
 
 		try {
 			var maxValue = allCryptodetails.stream().mapToDouble(CryptoDataSetEntity::getPrice).max().orElse(0);
@@ -56,10 +60,10 @@ public class CryptoappServiceImpl implements CryptoappService {
 			responseDTOMinmax.setMin(minValue);
 			responseDTOMinmax.setMax(maxValue);
 
-			logger.debug("Info " + responseDTOMinmax);
+			logger.info("Crypto Values " + responseDTOMinmax);
 
 		} catch (Exception e) {
-			throw new CryptoserviceException("This crypto " + cryptoName + " is not Supported");
+			throw new CryptoserviceException("Error while fetching for " + cryptoName );
 		}
 
 		return responseDTOMinmax;
@@ -96,6 +100,10 @@ public class CryptoappServiceImpl implements CryptoappService {
 			resultMap.put(symbol, normalizedVal);
 		}
 
+		if(resultMap.isEmpty()) {
+			throw new CryptoserviceException("No Crypto data available in the DB");
+		}
+		
 		// Sort the keys based on the values in descending order
 		var sortedKeys = resultMap.entrySet().stream()
 				.sorted(Map.Entry.<String, Double>comparingByValue().reversed()).map(Map.Entry::getKey)
@@ -103,7 +111,7 @@ public class CryptoappServiceImpl implements CryptoappService {
 
 		responseDTOallCryptoDesc.setData(sortedKeys);
 
-		logger.debug(" Sorted crypto list " + responseDTOallCryptoDesc.getData().toString());
+		logger.info(" Sorted crypto list " + responseDTOallCryptoDesc.getData().toString());
 
 		return responseDTOallCryptoDesc;
 
