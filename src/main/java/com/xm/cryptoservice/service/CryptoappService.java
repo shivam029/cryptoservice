@@ -15,10 +15,10 @@ import com.xm.cryptoservice.model.CryptoResponseDTO;
 
 public interface CryptoappService {
 
-	MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoname);
+	MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoName);
 
-	String getRequestedCryptoDataByDate(String cryptodate);
+	String getRequestedCryptoDataByDate(String cryptoDate);
 
-	CryptoResponseDTO getAllCryptoSortByDescending(List<CryptoDataSetEntity> allCryptoDetaildFromDB);
+	CryptoResponseDTO getAllCryptoSortByDescending(List<CryptoDataSetEntity> allCryptoDataFromDB);
 
 }

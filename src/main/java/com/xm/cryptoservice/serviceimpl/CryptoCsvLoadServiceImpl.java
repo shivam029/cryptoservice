@@ -32,15 +32,13 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 	@Override
 	public LoadResponseDTO loadAllCsvDataToDatabase() {
 
-        LoadResponseDTO loadResponseDTO = new LoadResponseDTO();
+		LoadResponseDTO loadResponseDTO = null;
 
-		Map<String, List<CryptoDataSetEntity>> allCryptodetails = CsvFileLoader.readCryptoCsvFiles();
+		var allCryptodetails = CsvFileLoader.readCryptoCsvFiles();
 
 		if (allCryptodetails.isEmpty()) {
 
-			loadResponseDTO.setSize(0);
-			loadResponseDTO.setStatus_msg("no records");
-			loadResponseDTO.setStatuscode(HttpStatus.ACCEPTED);
+			loadResponseDTO = new LoadResponseDTO(0, "no records", HttpStatus.ACCEPTED);
 		}
 
 		for (Map.Entry<String, List<CryptoDataSetEntity>> datalst : allCryptodetails.entrySet()) {
@@ -48,21 +46,17 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 			try {
 				List<CryptoDataSetEntity> lst = cryptoDataSetRepository.saveAll(datalst.getValue());
 				logger.debug("Crypto " + datalst.getKey() + " Inserted = " + lst.size());
-				loadResponseDTO.setSize(lst.size());
-				loadResponseDTO.setStatus_msg("success");
-				loadResponseDTO.setStatuscode(HttpStatus.CREATED);
+				loadResponseDTO = new LoadResponseDTO(lst.size(), "success", HttpStatus.CREATED);
 
 			} catch (Exception e) {
-				loadResponseDTO.setSize(0);
-				loadResponseDTO.setStatus_msg("error");
-				loadResponseDTO.setStatuscode(HttpStatus.INTERNAL_SERVER_ERROR);
+				loadResponseDTO = new LoadResponseDTO(0, "error", HttpStatus.INTERNAL_SERVER_ERROR);
 				logger.error("Error with Data load from csv to mongodb ", e);
 				
 			}
 
 		}
 
-		if (loadResponseDTO.getStatus_msg().equals("error")) {
+		if (loadResponseDTO.status_msg().equals("error")) {
 			
 			throw new CryptoserviceException("Issue with data upload from csv files to mongodb ");
 		}
@@ -72,7 +66,7 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 
 	public List<CryptoDataSetEntity> getAllCryptoDetails() {
 
-		List<CryptoDataSetEntity> cryptoAllRecords = new ArrayList<CryptoDataSetEntity>();
+		var cryptoAllRecords = new ArrayList<CryptoDataSetEntity>();
 
 		cryptoDataSetRepository.findAll().forEach(cryptoAllRecords::add);
 
@@ -83,7 +77,7 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 	@Override
 	public List<CryptoDataSetEntity> getAllCryptoDetailsByName(String cryptoname) {
 
-		List<CryptoDataSetEntity> cryptoAllRecords = new ArrayList<CryptoDataSetEntity>();
+		var cryptoAllRecords = new ArrayList<CryptoDataSetEntity>();
 
 		cryptoDataSetRepository.findBySymbolContaining(cryptoname).forEach(cryptoAllRecords::add);
 
@@ -94,9 +88,9 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 	@Override
 	public String getAllCryptoDetailsByDate(String cryptoDate) {
 
-		List<CryptoDataSetEntity> cryptoAllRecords = new ArrayList<CryptoDataSetEntity>();
+		var cryptoAllRecords = new ArrayList<CryptoDataSetEntity>();
 
-		Map<String, Double> resultMap = new HashMap<>();
+		var resultMap = new HashMap<String, Double>();
 
 		String highestNormalizedKey = null;
 
@@ -109,15 +103,15 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 
 		for (String key : symbollst) {
 
-			double maxValue = cryptoAllRecords.stream()
+			var maxValue = cryptoAllRecords.stream()
 					.filter(x -> formatter.format(x.getTimestamp()).equals(cryptoDate))
 					.filter(x -> x.getSymbol().equals(key)).mapToDouble(CryptoDataSetEntity::getPrice).max().orElse(0);
 
-			double minValue = cryptoAllRecords.stream()
+			var minValue = cryptoAllRecords.stream()
 					.filter(x -> formatter.format(x.getTimestamp()).equals(cryptoDate))
 					.filter(x -> x.getSymbol().equals(key)).mapToDouble(CryptoDataSetEntity::getPrice).min().orElse(0);
 
-			double normalizedVal = (maxValue - minValue) / minValue;
+			var normalizedVal = (maxValue - minValue) / minValue;
 
 			if (!Double.isNaN(normalizedVal)) {
 				resultMap.put(key, normalizedVal);

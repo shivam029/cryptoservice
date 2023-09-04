@@ -12,8 +12,8 @@ import org.springframework.web.context.request.WebRequest;
 public class ControllerExceptionHandler {
 
 	@ExceptionHandler(CryptoserviceException.class)
-	public ResponseEntity<ErrorMessage> resourceNotFoundException(CryptoserviceException ex, WebRequest request) {
-		ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND.value(), new Date(), ex.getMessage(),
+	public ResponseEntity<ErrorMessage> cryptoserviceExceptionHandler(CryptoserviceException ex, WebRequest request) {
+		var message = new ErrorMessage(HttpStatus.NOT_FOUND.value(), new Date(), ex.getMessage(),
 				request.getDescription(false));
 
 		return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
@@ -21,7 +21,7 @@ public class ControllerExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
-		ErrorMessage message = new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), new Date(), ex.getMessage(),
+		var message = new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), new Date(), ex.getMessage(),
 				request.getDescription(false));
 
 		return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -64,7 +64,7 @@ public class S3CSVReader {
 
 	public Map<String, List<CryptoDataSetEntity>> readCryptoCsvFilesFromAWSS3Bucket() {
 
-		Map<String, List<CryptoDataSetEntity>> csvDataMap = new HashMap<>();
+		var csvDataMap = new HashMap<String, List<CryptoDataSetEntity>>();
 
 		// List objects from the specified folder in the S3 bucket
 		ListObjectsV2Request request = new ListObjectsV2Request().withBucketName(bucketName)
@@ -75,7 +75,7 @@ public class S3CSVReader {
 		// Print the list of object names
 		logger.debug("Objects in folder '" + prices_folderPath + "':");
 
-		List<String> fileList = new ArrayList<>();
+		var fileList = new ArrayList<String>();
 
 		for (S3ObjectSummary objectSummary : objectSummaries) {
 
@@ -92,7 +92,7 @@ public class S3CSVReader {
 
 				records = reader.getS3Records(bucketName, filePathName);
 
-				String str = filePathName.substring(prices_folderPath.length());
+				var str = filePathName.substring(prices_folderPath.length());
 
 				String[] cryptoName = str.split(Pattern.quote("_"));
 

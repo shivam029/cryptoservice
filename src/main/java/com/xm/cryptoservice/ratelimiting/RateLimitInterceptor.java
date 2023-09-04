@@ -31,8 +31,8 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
 	private Bucket newBucket(String apiKey) {
 
-		System.out.println("RATE_LIMIT is " + RATE_LIMIT);
-		System.out.println("TIME_DURATION is " + TIME_DURATION);
+		logger.debug("RATE_LIMIT is " + RATE_LIMIT);
+		logger.debug("TIME_DURATION is " + TIME_DURATION);
 		Refill refill = Refill.intervally(RATE_LIMIT, Duration.ofMinutes(TIME_DURATION));
 		Bandwidth limit = Bandwidth.classic(RATE_LIMIT, refill);
 		return Bucket.builder().addLimit(limit).build();
@@ -46,12 +46,12 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		logger.info("Inside RateLimitInterceptor preHandle method ");
+		logger.debug("Inside RateLimitInterceptor preHandle method ");
 		String remoteIpAddress = request.getHeader("X-Forwarded-For");
 
 		if (remoteIpAddress == null || remoteIpAddress.isEmpty()) {
 			remoteIpAddress = request.getRemoteAddr();
-			logger.info("remoteIpAddress with getRemoteAddr is " + remoteIpAddress);
+			
 		}
 		if (remoteIpAddress == null || remoteIpAddress.isEmpty()) {
 			response.sendError(HttpStatus.BAD_REQUEST.value(), "Missing Header: remoteIpAddress");

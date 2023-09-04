@@ -20,7 +20,7 @@ public class CsvFileLoader {
 
 	public static Map<String, List<CryptoDataSetEntity>> readCryptoCsvFiles() {
 
-		Map<String, List<CryptoDataSetEntity>> csvDataMap = new HashMap<>();
+		Map<String, List<CryptoDataSetEntity>> csvDataMap = new HashMap<String, List<CryptoDataSetEntity>>();
 		S3CSVReader svr = new S3CSVReader();
 		csvDataMap = svr.readCryptoCsvFilesFromAWSS3Bucket();
 

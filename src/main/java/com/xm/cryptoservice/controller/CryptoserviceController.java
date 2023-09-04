@@ -14,6 +14,8 @@ import com.xm.cryptoservice.model.MinmaxResponseDTO;
 import com.xm.cryptoservice.service.CryptoCsvLoadService;
 import com.xm.cryptoservice.service.CryptoappService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/api/v1/crypto")
 public class CryptoserviceController {
@@ -24,10 +26,7 @@ public class CryptoserviceController {
 	@Autowired
 	CryptoCsvLoadService cryptoCsvLoadService;
 
-	/*
-	 * This API Loads all CSV data to mongo database
-	 */
-
+	@Operation(summary = "Post all crypto ", description = "This API Loads all CSV data to mongo database ")
 	@PostMapping(value = "/load")
 	public LoadResponseDTO loadAllCsvDataToDatabase() {
 
@@ -35,38 +34,22 @@ public class CryptoserviceController {
 
 	}
 
-	/*
-	 * This API Exposes an endpoint that will return a descending sorted list of all
-	 * the cryptos,
-	 * 
-	 */
-
+	@Operation(summary = "Get all crypto names ", description = "Return a descending sorted list of all the cryptos ")
 	@GetMapping(value = "/sort/desc")
-	@ResponseBody
 	public CryptoResponseDTO getAllCryptoSortByDescending() {
 
 		return cryptoappService.getAllCryptoSortByDescending(cryptoCsvLoadService.getAllCryptoDetails());
 
 	}
 
-	/*
-	 * The below API exposes an endpoint that will return the oldest/newest/min/max
-	 * values for a requested crypto
-	 * 
-	 */
-
+	@Operation(summary = "Get crypto min-max by date", description = "Return the crypto values for oldest/newest/min/max ")
 	@GetMapping(value = "/minmax")
 	public MinmaxResponseDTO getRequestedCryptoDataByName(@RequestParam(required = true) String cryptoName) {
 
 		return cryptoappService.getRequestedCryptoDataByName(cryptoName);
 	}
 
-	/*
-	 * The below API exposes an endpoint that will return the crypto with the
-	 * highest normalized range for a specific day
-	 * 
-	 */
-
+	@Operation(summary = "Get crypto by date", description = "Return the crypto with the highest normalized range for a specific day")
 	@GetMapping(value = "/normalized")
 	public String getRequestedCryptoDataByDate(@RequestParam(required = true) String cryptoDate) {
 

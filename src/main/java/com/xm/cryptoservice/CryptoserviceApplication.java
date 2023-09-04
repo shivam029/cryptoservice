@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
  * 
  */
 @SpringBootApplication
-@EnableCaching
+//@EnableCaching
 @EnableMongoRepositories
 public class CryptoserviceApplication {
 	

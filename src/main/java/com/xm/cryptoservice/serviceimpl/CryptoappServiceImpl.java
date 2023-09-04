@@ -31,24 +31,24 @@ public class CryptoappServiceImpl implements CryptoappService {
 	@Cacheable(value = "getCryptobyName")
 	public MinmaxResponseDTO getRequestedCryptoDataByName(String cryptoName) {
 
-		MinmaxResponseDTO responseDTOMinmax = new MinmaxResponseDTO();
+		var responseDTOMinmax = new MinmaxResponseDTO();
 
-		List<CryptoDataSetEntity> allCryptodetails = cryptoCsvLoadService.getAllCryptoDetailsByName(cryptoName);
+		var allCryptodetails = cryptoCsvLoadService.getAllCryptoDetailsByName(cryptoName);
 
 		try {
-			double maxValue = allCryptodetails.stream().mapToDouble(CryptoDataSetEntity::getPrice).max().orElse(0);
-			double minValue = allCryptodetails.stream().mapToDouble(CryptoDataSetEntity::getPrice).min().orElse(0);
+			var maxValue = allCryptodetails.stream().mapToDouble(CryptoDataSetEntity::getPrice).max().orElse(0);
+			var minValue = allCryptodetails.stream().mapToDouble(CryptoDataSetEntity::getPrice).min().orElse(0);
 
 			Date oldestDate = allCryptodetails.stream().map(CryptoDataSetEntity::getTimestamp).min(Date::compareTo)
 					.get();
 
-			Double oldestValue = allCryptodetails.stream().filter(x -> x.getTimestamp().equals(oldestDate))
+			var oldestValue = allCryptodetails.stream().filter(x -> x.getTimestamp().equals(oldestDate))
 					.mapToDouble(CryptoDataSetEntity::getPrice).findFirst().orElse(0);
 
-			Date newestDate = allCryptodetails.stream().map(CryptoDataSetEntity::getTimestamp).max(Date::compareTo)
+			var newestDate = allCryptodetails.stream().map(CryptoDataSetEntity::getTimestamp).max(Date::compareTo)
 					.get();
 
-			Double newestValue = allCryptodetails.stream().filter(x -> x.getTimestamp().equals(newestDate))
+			var newestValue = allCryptodetails.stream().filter(x -> x.getTimestamp().equals(newestDate))
 					.mapToDouble(CryptoDataSetEntity::getPrice).findFirst().orElse(0);
 
 			responseDTOMinmax.setOldest(oldestValue);
@@ -80,24 +80,24 @@ public class CryptoappServiceImpl implements CryptoappService {
 		List<String> symbolLst = allCryptoData.stream().map(CryptoDataSetEntity::getSymbol).distinct()
 				.collect(Collectors.toList());
 
-		Map<String, Double> resultMap = new HashMap<>();
-		CryptoResponseDTO responseDTOallCryptoDesc = new CryptoResponseDTO();
+		var resultMap = new HashMap<String, Double>();
+		var responseDTOallCryptoDesc = new CryptoResponseDTO();
 
 		for (String symbol : symbolLst) {
 
-			double maxValue = allCryptoData.stream().filter(x -> x.getSymbol().equals(symbol))
+			var maxValue = allCryptoData.stream().filter(x -> x.getSymbol().equals(symbol))
 					.mapToDouble(CryptoDataSetEntity::getPrice).max().orElse(0);
 
-			double minValue = allCryptoData.stream().filter(x -> x.getSymbol().equals(symbol))
+			var minValue = allCryptoData.stream().filter(x -> x.getSymbol().equals(symbol))
 					.mapToDouble(CryptoDataSetEntity::getPrice).min().orElse(0);
 
-			double normalizedVal = (maxValue - minValue) / minValue;
+			var normalizedVal = (maxValue - minValue) / minValue;
 
 			resultMap.put(symbol, normalizedVal);
 		}
 
 		// Sort the keys based on the values in descending order
-		List<String> sortedKeys = resultMap.entrySet().stream()
+		var sortedKeys = resultMap.entrySet().stream()
 				.sorted(Map.Entry.<String, Double>comparingByValue().reversed()).map(Map.Entry::getKey)
 				.collect(Collectors.toList());
 
