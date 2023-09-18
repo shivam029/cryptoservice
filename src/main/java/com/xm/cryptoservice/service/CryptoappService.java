@@ -1,6 +1,7 @@
 package com.xm.cryptoservice.service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.xm.cryptoservice.entity.CryptoDataSetEntity;
 import com.xm.cryptoservice.model.CryptoResponseDTO;
@@ -18,5 +19,7 @@ public interface CryptoappService {
 	String getRequestedCryptoDataByDate(String cryptoDate);
 
 	CryptoResponseDTO getAllCryptoSortByDescending(List<CryptoDataSetEntity> allCryptoDataFromDB);
+
+	CompletableFuture<String> getRequestedCryptoDataByDateAsyncCall(String cryptoDate);
 
 }

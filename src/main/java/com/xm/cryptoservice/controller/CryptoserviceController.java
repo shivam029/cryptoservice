@@ -1,5 +1,7 @@
 package com.xm.cryptoservice.controller;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +56,15 @@ public class CryptoserviceController {
 	public String getRequestedCryptoDataByDate(@RequestParam(required = true) String cryptoDate) {
 
 		return cryptoappService.getRequestedCryptoDataByDate(cryptoDate);
+
+	}
+	
+	// Using CompletableFuture Asynchronous call
+	@Operation(summary = "Get crypto by date Asynchronous call ", description = "Return the crypto with the highest normalized range for a specific day with Asynchronous Call ")
+	@GetMapping(value = "/normalizedAsyncCall")
+	public CompletableFuture<String> getRequestedCryptoDataByDateAsyncCall(@RequestParam(required = true) String cryptoDate) {
+
+		return cryptoappService.getRequestedCryptoDataByDateAsyncCall(cryptoDate);
 
 	}
 

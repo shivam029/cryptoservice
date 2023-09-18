@@ -46,7 +46,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		logger.debug("Inside RateLimitInterceptor preHandle method ");
+		logger.info("Calling RateLimitInterceptor preHandle method ");
 		String remoteIpAddress = request.getHeader("X-Forwarded-For");
 
 		if (remoteIpAddress == null || remoteIpAddress.isEmpty()) {

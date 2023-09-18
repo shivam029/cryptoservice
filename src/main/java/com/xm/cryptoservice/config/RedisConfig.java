@@ -35,7 +35,9 @@ public class RedisConfig {
 		return RedisCacheManager.builder(redisConnectionFactory()).cacheDefaults(cacheConfig)
 				.withCacheConfiguration("allcryptosorteddata", myDefaultCacheConfig(Duration.ofMinutes(1)))
 				.withCacheConfiguration("getCryptobyDate", myDefaultCacheConfig(Duration.ofMinutes(1)))
-				.withCacheConfiguration("getCryptobyName", myDefaultCacheConfig(Duration.ofMinutes(1))).build();
+				.withCacheConfiguration("getCryptobyName", myDefaultCacheConfig(Duration.ofMinutes(1)))
+				.withCacheConfiguration("getCryptobyDateByAsyncCall", myDefaultCacheConfig(Duration.ofMinutes(1))).build();
+		
 	}
 
 	private RedisCacheConfiguration myDefaultCacheConfig(Duration duration) {

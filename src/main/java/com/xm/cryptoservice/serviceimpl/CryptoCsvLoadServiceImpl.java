@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.xm.cryptoservice.csvutility.CsvFileLoader;
 import com.xm.cryptoservice.entity.CryptoDataSetEntity;
@@ -20,6 +22,8 @@ import com.xm.cryptoservice.model.LoadResponseDTO;
 import com.xm.cryptoservice.repository.CryptoDataSetRepository;
 import com.xm.cryptoservice.service.CryptoCsvLoadService;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 
@@ -27,6 +31,9 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 
 	@Autowired
 	CryptoDataSetRepository cryptoDataSetRepository;
+	
+	@Autowired
+    private WebClient webClient;
 
 	@Override
 	public LoadResponseDTO loadAllCsvDataToDatabase() {
@@ -131,6 +138,25 @@ public class CryptoCsvLoadServiceImpl implements CryptoCsvLoadService {
 		}
 
 		return highestNormalizedKey;
+	}
+
+	@Override
+	public CompletableFuture<String> getRequestedCryptoDataByDateAsyncCall(String cryptoDate) {
+		// TODO Auto-generated method stub
+		
+		CompletableFuture<String> cf = new CompletableFuture<>();
+		
+		// Using WebClient
+		Mono<String> monoResponse = webClient.get()
+				                    .uri("/api/v1/crypto/normalized?cryptoDate="+cryptoDate)
+				                    .retrieve()
+				                    .bodyToMono(String.class);
+		
+		monoResponse.subscribe(res -> cf.complete(res),err -> cf.completeExceptionally(err));
+		
+	
+		return cf;
+       
 	}
 
 }

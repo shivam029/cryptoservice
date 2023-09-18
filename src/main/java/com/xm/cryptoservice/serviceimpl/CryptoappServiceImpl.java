@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -67,14 +68,6 @@ public class CryptoappServiceImpl implements CryptoappService {
 	}
 
 	@Override
-	@Cacheable(value = "getCryptobyDate")
-	public String getRequestedCryptoDataByDate(String cryptoDate) {
-
-		return cryptoCsvLoadService.getAllCryptoDetailsByDate(cryptoDate);
-
-	}
-
-	@Override
 	@Cacheable(value = "allcryptosorteddata")
 	public CryptoResponseDTO getAllCryptoSortByDescending(List<CryptoDataSetEntity> allCryptoData) {
 
@@ -111,6 +104,21 @@ public class CryptoappServiceImpl implements CryptoappService {
 		logger.info(" Sorted crypto list " + responseDTOallCryptoDesc.data().toString());
 
 		return responseDTOallCryptoDesc;
+
+	}
+	
+	@Override
+	@Cacheable(value = "getCryptobyDateByAsyncCall")
+	public String getRequestedCryptoDataByDate(String cryptoDate) {
+
+		return cryptoCsvLoadService.getAllCryptoDetailsByDate(cryptoDate);
+
+	}
+
+	@Override
+	public CompletableFuture<String> getRequestedCryptoDataByDateAsyncCall(String cryptoDate) {
+		// TODO Auto-generated method stub
+		return cryptoCsvLoadService.getRequestedCryptoDataByDateAsyncCall(cryptoDate);
 
 	}
 
